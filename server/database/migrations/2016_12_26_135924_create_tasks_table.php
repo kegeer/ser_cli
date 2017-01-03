@@ -20,6 +20,8 @@ class CreateTasksTable extends Migration
             $table->integer('pipeline_id');
             $table->timestamp('start_time');
             $table->timestamp('end_time');
+            $table->tinyInteger('exp_manager');
+            $table->tinyInteger('info_manager');
             $table->timestamps();
         });
     }

@@ -16,8 +16,12 @@ class TaskTransformer extends TransformerAbstract
 			'name' => $task->name,
 			'project_id' => $task->project_id,
 			'pipeline_id' => $task->pipeline_id,
-			'start_time' => $task->start_time,
-			'end_time' => $task->end_time,
+			'exp_manager' => $task->exp_manager,
+			'info_manager' => $task->info_manager,
+			'datetime_range' => [
+				0 => $task->start_time,
+				1 => $task->end_time
+			],
 			'created_at' => $task->created_at->toIso8601String(),
             'updated_at' => $task->updated_at->toIso8601String()
 		];

@@ -18,6 +18,9 @@ class CreateSamplesTable extends Migration
             $table->integer('batch_id');
             $table->string('ori_num')->nullable();
             $table->string('py_num')->nullable();
+            $table->tinyInteger('sample_amount_type');
+            $table->float('sample_amount')->nullable();
+            $table->string('sample_status')->nullable();
             $table->timestamps();
         });
     }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Batch;
 use App\Transformers\BatchTransformer;
-
+use Carbon\Carbon;
 class BatchesController extends ApiController
 {
     public function index()
@@ -18,10 +18,23 @@ class BatchesController extends ApiController
     }
     public function store(Request $request)
     {
-    	// dd($request->all());
+        // $time = $request->get('send_time');
+        // // $dd = Carbon::createFromFormat('d/m/Y', $time);
+        // // $dd = Carbon::parse($time)->format('d/m/Y');
+        // $dd = Carbon::createFromFormat('d/m/Y', $time)->toDateString();
+        // dd($dd);
     	$batch = Batch::create([
-    		'py_num' => $request->get('py_num'),
-    		'ori_num' => $request->get('ori_num'),
+    		'client_id' => $request->get('client_id'),
+            'sample_type' => $request->get('sample_type'),
+            'sender' => $request->get('sender'),
+            'sender_contact' => $request->get('sender_contact'),
+            'send_time' => $request->get('send_time'),
+            'arrive_status' => $request->get('arrive_status'),
+            'store_location' => $request->get('store_location'),
+            'arrive_time' => $request->get('arrive_time'),
+            'recipient' => $request->get('recipient'),
+            'express_num' => $request->get('express_num'),
+            'note' => $request->get('note')
 		]);
 		return $this->response->withCreated($batch, new BatchTransformer);
     }
@@ -36,8 +49,17 @@ class BatchesController extends ApiController
     {
     	$batch = $this->findOrNot($id);
     	$batch->fill([
-    		'py_num' => $request->get('py_num'),
-    		'ori_num' => $request->get('ori_num')
+            'client_id' => $request->get('client_id'),
+            'sample_type' => $request->get('sample_type'),
+            'sender' => $request->get('sender'),
+            'sender_contact' => $request->get('sender_contact'),
+            'send_time' => $request->get('send_time'),
+            'arrive_status' => $request->get('arrive_status'),
+            'store_location' => $request->get('store_location'),
+            'arrive_time' => $request->get('arrive_time'),
+            'recipient' => $request->get('recipient'),
+            'express_num' => $request->get('express_num'),
+    		'note' => $request->get('note')
     	])->save();
         return $this->response->item($batch, new BatchTransformer);
     }

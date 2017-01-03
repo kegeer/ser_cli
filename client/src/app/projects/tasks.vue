@@ -27,7 +27,8 @@
 
     <el-table v-loading="fetching" :data="tasks" stripe border style="width: 100%;">
       <el-table-column prop="id" label="ID" width="80"></el-table-column>
-      <el-table-column prop="name" label="谱元"></el-table-column>
+      <el-table-column prop="name" label="任务名称"></el-table-column>
+      <el-table-column prop="pipeline_id" label="技术路线"></el-table-column>
       <el-table-column inline-template label="操作" width="180">
         <div>
           <el-button @click="edit($index)" type="default" icon="edit" size="mini">
@@ -43,9 +44,53 @@
     </div>
 
     <el-dialog :title="formTitle" v-model="isFormVisible" :close-on-click-modal="false" @close="close">
-      <el-form :model="form" label-width="80px" :rules="formRules" ref="form">
-        <el-form-item label="谱元" ref="firstInput" prop="name">
-          <el-input v-model="form.name" auto-complete="off"></el-input>
+      <el-form :model="form" label-width="120px" :rules="formRules" ref="form">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="名称" ref="firstInput" prop="name">
+              <el-input v-model="form.name" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="技术路线" ref="firstInput" prop="name">
+              <el-select v-model="form.pipeline_id" placeholder="Select">
+                <el-option
+                  v-for="item in options"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="实验负责人" ref="firstInput" prop="name">
+              <el-select v-model="form.exp_manager" placeholder="Select">
+                <el-option
+                  v-for="item in options"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="信息负责人" prop="manager">
+              <el-select v-model="form.info_manager" placeholder="Select">
+                <el-option
+                  v-for="item in options"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="时间周期" prop="datetime_range">
+          <el-date-picker v-model="form.datetime_range" type="datetimerange" placeholder="选择时间周期">
+            </el-date-picker>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -69,20 +114,27 @@ export default {
       form: {
         id: 0,
         project_id: this.$route.params.id,
-        pipeline_id: 1,
+        pipeline_id: 0,
+        exp_manager: 0,
+        info_manager: 0,
+        datetime_range: [],
         name: ''
       },
+      options: [
+        {
+          value: 1,
+          label: 'op1'
+        },
+        {
+          value: 2,
+          label: 'op2'
+        }
+      ],
       isFormVisible: false,
       formTitle: '编辑',
       fromButtonText: '保存',
       formLoading: false,
       formRules: {
-        py_num: [
-          {required: true, message: '请输入名称', trigger: 'blure'}
-        ],
-        ori_num: [
-          {required: true, message: '请选择负责人', trigger: 'blure'}
-        ]
       }
     }
   },
@@ -190,8 +242,11 @@ export default {
     close () {
       this.form.id = 0
       this.form.project_id = this.$route.params.id
-      this.form.pipeline_id = 1
+      this.form.pipeline_id = 0
       this.form.name = ''
+      this.form.exp_manager = 0
+      this.form.info_manager = 0
+      this.form.datetime_range = []
       this.isFormVisible = false
     },
     update () {
@@ -210,7 +265,7 @@ export default {
         })
     },
     save () {
-      this.$http.post('tasks', pick(this.form, ['project_id', 'pipeline_id', 'name'])).then(() => {
+      this.$http.post('tasks', pick(this.form, ['project_id', 'pipeline_id', 'name', 'exp_manager', 'info_manager', 'datetime_range'])).then(() => {
         this.close()
         this.fetch()
         this.setFetching({

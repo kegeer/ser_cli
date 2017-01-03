@@ -21,7 +21,7 @@ class ProjectsController extends ApiController
     	// dd($request->all());
     	$project = Project::create([
     		'name' => $request->get('name'),
-    		'manager' => $request->get('manager'),
+    		'manager' => $request->get('manager')
 		]);
 		return $this->response->withCreated($project, new ProjectTransformer);
     }

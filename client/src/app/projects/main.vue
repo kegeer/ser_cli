@@ -43,12 +43,18 @@
 
     <el-dialog :title="formTitle" v-model="isFormVisible" :close-on-click-modal="false" @close="close">
       <el-form :model="form" label-width="80px" :rules="formRules" ref="form">
-        <el-form-item label="名称" ref="firstInput" prop="name">
-          <el-input v-model="form.name" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="负责人" prop="manager">
-          <el-input v-model="form.manager" auto-complete="off"></el-input>
-        </el-form-item>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="名称" ref="firstInput" prop="name">
+              <el-input v-model="form.name" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="负责人" prop="manager">
+              <el-input v-model="form.manager" auto-complete="off"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="close">取消</el-button>

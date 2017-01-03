@@ -1,10 +1,22 @@
 <template>
 <main>
   <div class="main-left">
-    <el-menu default-active="/active" class="el-menu-vertical-demo" :router="true">
-      <el-menu-item index="/active" :class="{'isActive': active}">批次管理</el-menu-item>
-      <el-menu-item index="/manager" :class="{'isActive': !active}">样品管理</el-menu-item>
+    <el-menu default-active="/batches" class="el-menu-vertical-demo" :router="true">
+      <el-menu-item index="/batches">批次管理</el-menu-item>
+      <el-menu-item index="/samples">样品管理</el-menu-item>
+
     </el-menu>
+
+    <el-menu default-active="2" class="el-menu-vertical-demo">
+      <el-submenu index="1">
+        <template slot="title">额外信息</template>
+          <el-menu-item index="/store_locations">存放位置管理</el-menu-item>
+          <el-menu-item index="/recipients">收样人管理</el-menu-item>
+          <el-menu-item index="/clients">样品源管理</el-menu-item>
+          <el-menu-item index="/consumers">消费者管理</el-menu-item>
+      </el-submenu>
+    </el-menu>
+
   </div>
   <div class="main-right">
     <breadcrumb></breadcrumb>
@@ -25,7 +37,9 @@
     </div>
     <el-table v-loading="fetching" :data="batches" stripe border style="width: 100%;">
       <el-table-column prop="id" label="ID" width="80"></el-table-column>
-      <el-table-column prop="py_num" label="谱元编号"></el-table-column>
+      <el-table-column prop="client_id" label="客户方"></el-table-column>
+      <el-table-column prop="send_time" label="寄送时间"></el-table-column>
+      <el-table-column prop="arrive_time" label="到样时间"></el-table-column>
       <el-table-column inline-template label="操作" width="180">
         <div>
           <el-button @click="samples($index)" type="default" icon="plus" size="mini">
@@ -43,9 +57,57 @@
     </div>
 
     <el-dialog :title="formTitle" v-model="isFormVisible" :close-on-click-modal="false" @close="close">
-      <el-form :model="form" label-width="80px" :rules="formRules" ref="form">
-        <el-form-item label="谱元编号" :label-width="formLabelWidth" prop="py_num">
-          <el-input v-model="form.py_num" auto-complete="off"></el-input>
+      <el-form :model="form" label-width="120px" :rules="formRules" ref="form">
+        <el-form-item label="样品来源" prop="client_id">
+          <el-input v-model="form.client_id" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="样品类型">
+         <el-select v-model="form.sample_type" placeholder="please select your zone">
+           <el-option label="其他" value="0"></el-option>
+           <el-option label="粪便" value="1"></el-option>
+           <el-option label="脑脊液" value="2"></el-option>
+           <el-option label="DNA" value="3"></el-option>
+           <el-option label="土壤" value="4"></el-option>
+           <el-option label="发酵品" value="5"></el-option>
+         </el-select>
+       </el-form-item>
+       <el-form-item label="寄样人">
+            <el-input v-model="form.sender"></el-input>
+          </el-form-item>
+          <el-form-item label="寄样时间">
+            <el-date-picker type="date" placeholder="选择一个时间" v-model="form.send_time"></el-date-picker>
+          </el-form-item>
+          <el-form-item label="寄样联系方式">
+            <el-input v-model="form.sender_contact"></el-input>
+          </el-form-item>
+          <el-form-item label="到样状态">
+           <el-select v-model="form.arrive_status" placeholder="please select your zone">
+             <el-option label="其他" value="0"></el-option>
+             <el-option label="干冰冻存" value="1"></el-option>
+             <el-option label="冰袋冻存" value="2"></el-option>
+             <el-option label="室温" value="3"></el-option>
+             <el-option label="异常" value="4"></el-option>
+           </el-select>
+         </el-form-item>
+         <el-form-item label="存储位置">
+          <el-select v-model="form.store_location" placeholder="please select your zone">
+            <el-option label="其他" value="0"></el-option>
+            <el-option label="一号冰箱" value="1"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="收样人">
+         <el-select v-model="form.recipient" placeholder="please select your zone">
+           <el-option label="其他" value="0"></el-option>
+         </el-select>
+       </el-form-item>
+       <el-form-item label="到样时间">
+         <el-date-picker type="date" placeholder="选择一个时间" v-model="form.arrive_time"></el-date-picker>
+       </el-form-item>
+       <el-form-item label="快递单号">
+          <el-input v-model="form.express_num"></el-input>
+        </el-form-item>
+        <el-form-item label="意外情况">
+          <el-input type="textarea" v-model="form.note"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -53,6 +115,7 @@
         <el-button type="primary" @click.native.prevent="submit" :loading="formLoading">{{ fromButtonText }}</el-button>
       </div>
     </el-dialog>
+
   </div>
 </main>
 </template>
@@ -70,11 +133,6 @@ export default {
       startEndTime: '',
       active: true,
       formRules: {
-        py_num: [{
-          required: true,
-          message: '请输入谱元编号',
-          trigger: 'blur'
-        }]
       },
       isFormVisible: false,
       formTitle: '编辑',
@@ -83,7 +141,17 @@ export default {
       formLoading: false,
       form: {
         id: 0,
-        py_num: ''
+        client_id: 0,
+        sample_type: 0,
+        sender: '',
+        sender_contact: '',
+        send_time: '',
+        arrive_status: 0,
+        store_location: 0,
+        arrive_time: '',
+        recipient: 0,
+        express_num: '',
+        note: ''
       }
     }
   },
@@ -201,7 +269,17 @@ export default {
     },
     close () {
       this.form.id = 0
-      this.form.py_num = ''
+      this.form.client_id = 0
+      this.form.sample_type = 0
+      this.form.sender = ''
+      this.form.sender_contact = ''
+      this.form.send_time = ''
+      this.form.arrive_status = 0
+      this.form.store_location = 0
+      this.form.arrive_time = ''
+      this.form.recipient = 0
+      this.form.express_num = ''
+      this.form.note = ''
       this.isFormVisible = false
     },
     update () {
@@ -221,7 +299,7 @@ export default {
         })
     },
     save () {
-      this.$http.post('batches', pick(this.form, ['py_num'])).then(() => {
+      this.$http.post('batches', pick(this.form, ['client_id', 'sample_type', 'sender', 'sender_contact', 'send_time', 'arrive_status', 'store_location', 'arrive_time', 'recipient', 'express_num', 'note'])).then(() => {
         this.close()
         this.fetch()
         this.setFetching({

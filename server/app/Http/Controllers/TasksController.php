@@ -29,9 +29,11 @@ class TasksController extends ApiController
     	$task = Task::create([
     		'project_id' => $request->get('project_id'),
     		'pipeline_id' => $request->get('pipeline_id'),
-    		'name' => $request->get('name'),
-    		'start_time' => $request->get('start_time'),
-    		'end_time' => $request->get('end_time')
+            'name' => $request->get('name'),
+            'exp_manager' => $request->get('exp_manager'),
+    		'info_manager' => $request->get('info_manager'),
+    		'start_time' => $request->get('datetime_range')[0],
+            'end_time' => $request->get('datetime_range')[1]
 		]);
 		return $this->response->withCreated($task, new TaskTransformer);
     }

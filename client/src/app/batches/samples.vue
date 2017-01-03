@@ -1,9 +1,18 @@
 <template>
 <main>
   <div class="main-left">
-    <el-menu default-active="/active" class="el-menu-vertical-demo" :router="true">
-      <el-menu-item index="/active" :class="{'isActive': active}">批次管理</el-menu-item>
-      <el-menu-item index="/manager" :class="{'isActive': !active}">样品管理</el-menu-item>
+    <el-menu default-active="/batches" class="el-menu-vertical-demo" :router="true">
+      <el-menu-item index="/batches">批次管理</el-menu-item>
+      <el-menu-item index="/samples">样品管理</el-menu-item>
+    </el-menu>
+    <el-menu default-active="2" class="el-menu-vertical-demo">
+      <el-submenu index="1">
+        <template slot="title">额外信息</template>
+          <el-menu-item index="/store_locations">存放位置管理</el-menu-item>
+          <el-menu-item index="/recipients">收样人管理</el-menu-item>
+          <el-menu-item index="/clients">样品源管理</el-menu-item>
+          <el-menu-item index="/consumers">消费者管理</el-menu-item>
+      </el-submenu>
     </el-menu>
   </div>
 
@@ -38,13 +47,26 @@
     </div>
 
     <el-dialog :title="formTitle" v-model="isFormVisible" :close-on-click-modal="false" @close="close">
-      <el-form :model="form" label-width="80px" :rules="formRules" ref="form">
+      <el-form :model="form" label-width="120px" :rules="formRules" ref="form">
         <el-form-item label="谱元编号" ref="firstInput" prop="py_num">
           <el-input v-model="form.py_num" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="编号" prop="ori_num">
+        <el-form-item label="原始编号" prop="ori_num">
           <el-input v-model="form.ori_num" auto-complete="off"></el-input>
         </el-form-item>
+        <el-form-item prop="sample_amount_type" label="样品类型">
+          <el-radio-group v-model="form.sample_amount_type">
+            <el-radio :label="1">固态</el-radio>
+            <el-radio :label="2">液态</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item prop="sample_amount" label="样品量">
+          <el-input v-model="form.sample_amount" auto-complete="off" placeholder="g/ml"></el-input>
+        </el-form-item>
+       <el-form-item label="样品状态/特征">
+        <el-input v-model="form.sample_status" auto-complete="off" placeholder="例如：液体脑脊液微黄"></el-input>
+      </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="close">取消</el-button>
@@ -66,8 +88,11 @@ export default {
       form: {
         id: 0,
         batch_id: this.$route.params.id,
+        ori_num: '',
         py_num: '',
-        ori_num: ''
+        sample_amount_type: 0,
+        sample_amount: 0,
+        sample_status: ''
       },
       isFormVisible: false,
       formTitle: '编辑',
@@ -78,7 +103,7 @@ export default {
           {required: true, message: '请输入名称', trigger: 'blure'}
         ],
         ori_num: [
-          {required: true, message: '请选择负责人', trigger: 'blure'}
+          {required: true, message: '请填写原始编号', trigger: 'blure'}
         ]
       }
     }
@@ -189,6 +214,9 @@ export default {
       this.form.batch_id = this.$route.params.id
       this.form.py_num = ''
       this.form.ori_num = ''
+      this.form.sample_amount_type = 0
+      this.form.sample_amount = 0
+      this.form.sample_status = ''
       this.isFormVisible = false
     },
     update () {
@@ -207,7 +235,7 @@ export default {
         })
     },
     save () {
-      this.$http.post('samples', pick(this.form, ['batch_id', 'py_num', 'ori_num'])).then(() => {
+      this.$http.post('samples', pick(this.form, ['batch_id', 'py_num', 'ori_num', 'sample_amount_type', 'sample_amount', 'sample_status'])).then(() => {
         this.close()
         this.fetch()
         this.setFetching({

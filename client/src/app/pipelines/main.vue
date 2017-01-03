@@ -37,6 +37,20 @@
         <el-form-item label="名称" ref="firstInput" prop="name">
           <el-input v-model="form.name" auto-complete="off"></el-input>
         </el-form-item>
+        <el-form-item label="步骤" v-model="form.pipelines">
+          <el-row>
+            <el-col :span="4">
+              <el-form-item label="步骤"></el-form-item>
+            </el-col>
+            <el-col :span="10">
+              <el-form-item label="流程"></el-form-item>
+            </el-col>
+            <el-col :span="10">
+              <el-form-item label="方法"></el-form-item>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="close">取消</el-button>
@@ -57,7 +71,8 @@ export default {
       active: false,
       form: {
         id: 0,
-        name: ''
+        name: '',
+        pipelines: []
       },
       isFormVisible: false,
       formTitle: '编辑',

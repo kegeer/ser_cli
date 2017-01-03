@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSampleTaskTable extends Migration
+class CreateClientsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,13 @@ class CreateSampleTaskTable extends Migration
      */
     public function up()
     {
-        Schema::create('sample_tasks', function (Blueprint $table) {
+        Schema::create('clients', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('sample_id');
-            $table->integer('task_is');
-            $table->tinyInteger('sub');
+            $table->string('name');
+            $table->string('contacts');
+            $table->string('location');
+            $table->string('phone');
+            $table->string('email');
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ class CreateSampleTaskTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sample_tasks');
+        Schema::dropIfExists('clients');
     }
 }
