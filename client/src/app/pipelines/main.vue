@@ -1,9 +1,9 @@
 <template>
 <main>
   <div class="main-left">
-    <el-menu default-active="/active" class="el-menu-vertical-demo" :router="true">
-      <el-menu-item index="/active" :class="{'isActive': active}">技术路线管理</el-menu-item>
-      <el-menu-item index="/active" :class="{'isActive': active}">实验方法管理</el-menu-item>
+    <el-menu default-active="/pipelines" class="el-menu-vertical-demo" :router="true">
+      <el-menu-item index="/pipelines">技术路线管理</el-menu-item>
+      <el-menu-item index="/protocols">实验方法管理</el-menu-item>
     </el-menu>
   </div>
 
@@ -37,20 +37,46 @@
         <el-form-item label="名称" ref="firstInput" prop="name">
           <el-input v-model="form.name" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="步骤" v-model="form.pipelines">
-          <el-row>
-            <el-col :span="4">
-              <el-form-item label="步骤"></el-form-item>
-            </el-col>
-            <el-col :span="10">
-              <el-form-item label="流程"></el-form-item>
-            </el-col>
-            <el-col :span="10">
-              <el-form-item label="方法"></el-form-item>
-            </el-col>
-          </el-row>
-        </el-form-item>
-
+        <table style="width: 100%">
+          <thead>
+            <tr>
+              <th>Step</th>
+              <th>Procedure</th>
+              <th>Protocol</th>
+              <th>Time</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="step in form.steps">
+              <td>
+                <el-badge class="mark" :value="step.step" />
+              </td>
+              <td>
+                <el-select v-model="step.procedure" placeholder="please select your zone">
+                  <el-option v-for="p in procedures" :label="p.label" :value="p.id"></el-option>
+                </el-select>
+              </td>
+              <td>
+                <el-select v-model="step.protocol" placeholder="please select your zone">
+                  <el-option label="Zone one" value="1"></el-option>
+                  <el-option label="Zone two" value="2"></el-option>
+                </el-select>
+              </td>
+              <td>
+                <el-input v-model="step.time" auto-complete="off"></el-input>
+              </td>
+              <td>
+                <el-button type="danger" icon="delete" @click.prevent="removeLine(step)"></el-button>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="5">
+                <el-button type="primary" icon="plus" @click.prevent="addNewLine"></el-button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="close">取消</el-button>
@@ -72,7 +98,14 @@ export default {
       form: {
         id: 0,
         name: '',
-        pipelines: []
+        steps: [
+          {
+            step: 1,
+            procedure: 0,
+            protocol: 0,
+            time: 0
+          }
+        ]
       },
       isFormVisible: false,
       formTitle: '编辑',
@@ -92,7 +125,8 @@ export default {
     ...mapState({
       pipelines: state => state.Pipelines.pipelines,
       pagination: state => state.Pipelines.pipelines_pagination,
-      fetching: state => state.fetching
+      fetching: state => state.fetching,
+      procedures: state => state.procedures
     }),
     currentPage () {
       return parseInt(this.$route.query.page, 10) || 1
@@ -128,6 +162,18 @@ export default {
       this.formTitle = '新增'
       this.fromButtonText = '创建'
     },
+    removeLine (step) {
+      let index = this.form.steps.indexOf(step)
+      this.form.steps.splice(index, 1)
+    },
+    addNewLine () {
+      this.form.steps.push({
+        step: this.form.steps.length + 1,
+        procedure: 0,
+        protocol: 0,
+        time: 0
+      })
+    },
     tasks (index) {
       const { id } = this.pipelines[index]
       this.$router.push({
@@ -142,7 +188,15 @@ export default {
       this.formTitle = '编辑'
       this.fromButtonText = '更新'
       const pipeline = this.pipelines[index]
-      this.form = {...pipeline}
+      console.log(pipeline)
+      this.form.name = pipeline.name
+      if (typeof (pipeline.steps) === 'object') {
+        this.form.steps = {...pipeline.steps}
+      } else {
+        let data = JSON.parse(pipeline.steps)
+        console.log(data)
+        this.form.steps = {...data}
+      }
     },
     askRemove (index) {
       const pipeline = this.pipelines[index]
@@ -188,7 +242,16 @@ export default {
       })
     },
     close () {
-      this.$refs.form.resetFields()
+      this.form.id = 0
+      this.form.name = ''
+      this.form.steps = [
+        {
+          step: 1,
+          procedure: 0,
+          protocol: 0,
+          time: 0
+        }
+      ]
       this.isFormVisible = false
     },
     update () {
@@ -207,7 +270,7 @@ export default {
         })
     },
     save () {
-      this.$http.post('pipelines', pick(this.form, ['name', 'manager'])).then(() => {
+      this.$http.post('pipelines', pick(this.form, ['name', 'steps'])).then(() => {
         this.close()
         this.fetch()
         this.setFetching({

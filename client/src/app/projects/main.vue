@@ -1,12 +1,6 @@
 <template>
 <main>
-  <div class="main-left">
-    <el-menu default-active="/active" class="el-menu-vertical-demo" :router="true">
-      <el-menu-item index="/active" :class="{'isActive': active}">所有项目</el-menu-item>
-      <el-menu-item index="/active" :class="{'isActive': active}">所有任务</el-menu-item>
-      <el-menu-item index="/active" :class="{'isActive': active}">负责人管理</el-menu-item>
-    </el-menu>
-  </div>
+  <sidebar></sidebar>
 
   <div class="main-right">
     <breadcrumb></breadcrumb>
@@ -68,7 +62,11 @@
 <script>
 import { pick } from 'lodash'
 import { mapState, mapActions } from 'vuex'
+import Sidebar from './components/sidebar'
 export default {
+  components: {
+    Sidebar
+  },
   data () {
     return {
       name: '',

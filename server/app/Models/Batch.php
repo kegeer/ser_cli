@@ -23,4 +23,8 @@ class Batch extends Model
         // $this->attributes['arrive_time'] = Carbon::createFromFormat('d/m/Y', $value)->toDateString();
     	$this->attributes['arrive_time'] = Carbon::parse($value)->format('Y-m-d');
     }
+    public function task ()
+    {
+        return $this->belongsTo('App\Models\Task');
+    }
 }

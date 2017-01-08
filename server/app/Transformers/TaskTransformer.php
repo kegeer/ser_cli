@@ -22,6 +22,7 @@ class TaskTransformer extends TransformerAbstract
 				0 => $task->start_time,
 				1 => $task->end_time
 			],
+			'batchesSelection' => $task->batches,
 			'created_at' => $task->created_at->toIso8601String(),
             'updated_at' => $task->updated_at->toIso8601String()
 		];

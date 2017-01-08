@@ -16,6 +16,16 @@ class BatchesController extends ApiController
     	$batches = Batch::orderBy($sort, $order)->paginate($limit);
     	return $this->response->collection($batches, new BatchTransformer);
     }
+    public function unsign ()
+    {
+        // dd(Batch::where('task_id', null));
+        // dd('haha');
+        $sort = $this->getSort();
+        $order = $this->getOrder();
+        $limit = $this->getLimit();
+        $batches = Batch::where('task_id', null)->orderBy($sort, $order)->paginate($limit);
+        return $this->response->collection($batches, new BatchTransformer);
+    }
     public function store(Request $request)
     {
         // $time = $request->get('send_time');
@@ -42,7 +52,6 @@ class BatchesController extends ApiController
     {
     	$batch = $this->findOrNot($id);
     	return $this->response->item($batch, new BatchTransformer);
-
     }
 
     public function update(Request $request, $id)

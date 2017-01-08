@@ -21,4 +21,8 @@ class Task extends Model
     {
         $this->attributes['end_time'] = Carbon::parse($value)->format('Y-m-d');
     }
+    public function batches ()
+    {
+        return $this->hasMany('App\Models\Batch');
+    }
 }

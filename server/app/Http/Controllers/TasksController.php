@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\Task;
 use App\Transformers\TaskTransformer;
+use App\Models\Batch;
 
 class TasksController extends ApiController
 {
@@ -20,12 +21,13 @@ class TasksController extends ApiController
     	$sort = $this->getSort();
     	$order = $this->getOrder();
     	$limit = $this->getLimit();
-    	$tasks = Task::orderBy($sort, $order)->paginate($limit);
+    	$tasks = Task::with('batches')->orderBy($sort, $order)->paginate($limit);
     	return $this->response->collection($tasks, new TaskTransformer);
     }
     public function store(Request $request)
     {
     	// dd($request->all());
+        // dd($request->get('batchesSelection'));
     	$task = Task::create([
     		'project_id' => $request->get('project_id'),
     		'pipeline_id' => $request->get('pipeline_id'),
@@ -35,6 +37,13 @@ class TasksController extends ApiController
     		'start_time' => $request->get('datetime_range')[0],
             'end_time' => $request->get('datetime_range')[1]
 		]);
+        $batches = $request->get('batchesSelection');
+        // dd($batches);
+        foreach ($batches as $batch) {
+            $data = Batch::find($batch['id']);
+            $data->task_id = $task->id;
+            $data->save();
+        }
 		return $this->response->withCreated($task, new TaskTransformer);
     }
     public function show($id)

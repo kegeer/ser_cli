@@ -1,9 +1,9 @@
 <template>
 <main>
   <div class="main-left">
-    <el-menu default-active="/active" class="el-menu-vertical-demo" :router="true">
-      <el-menu-item index="/active" :class="{'isActive': active}">技术路线管理</el-menu-item>
-      <el-menu-item index="/active" :class="{'isActive': active}">实验方法管理</el-menu-item>
+    <el-menu default-active="/pipelines" class="el-menu-vertical-demo" :router="true">
+      <el-menu-item index="/pipelines">技术路线管理</el-menu-item>
+      <el-menu-item index="/protocols">实验方法管理</el-menu-item>
     </el-menu>
   </div>
 
@@ -39,15 +39,17 @@
     </div>
 
     <el-dialog :title="formTitle" v-model="isFormVisible" :close-on-click-modal="false" @close="close">
-      <el-form :model="form" label-width="80px" :rules="formRules" ref="form">
-        <el-form-item label="所属流程" ref="firstInput" prop="name">
-          <el-input v-model="form.procedure" auto-complete="off"></el-input>
-        </el-form-item>
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="form.name" auto-complete="off"></el-input>
-        </el-form-item>
+      <el-form :model="form" label-width="120px" :rules="formRules" ref="form">
+          <el-form-item label="所属流程" ref="firstInput" prop="name">
+            <el-select v-model="form.procedure" placeholder="please select your zone">
+              <el-option v-for="p in procedures" :label="p.label" :value="p.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="form.name" auto-complete="off"></el-input>
+          </el-form-item>
         <el-form-item label="详细步骤" prop="content">
-          <el-input v-model="form.content" auto-complete="off"></el-input>
+          <el-input type="textarea" v-model="form.content" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -94,7 +96,8 @@ export default {
     ...mapState({
       protocols: state => state.Pipelines.protocols,
       pagination: state => state.Pipelines.protocols_pagination,
-      fetching: state => state.fetching
+      fetching: state => state.fetching,
+      procedures: state => state.procedures
     }),
     currentPage () {
       return parseInt(this.$route.query.page, 10) || 1
@@ -138,6 +141,7 @@ export default {
       this.formTitle = '编辑'
       this.fromButtonText = '更新'
       const protocol = this.protocols[index]
+      console.log(protocol)
       this.form = {...protocol}
     },
     askRemove (index) {
@@ -184,7 +188,10 @@ export default {
       })
     },
     close () {
-      this.$refs.form.resetFields()
+      this.form.id = 0
+      this.form.procedure = 0
+      this.form.name = ''
+      this.form.content = ''
       this.isFormVisible = false
     },
     update () {

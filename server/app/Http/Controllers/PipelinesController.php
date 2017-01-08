@@ -18,6 +18,7 @@ class PipelinesController extends ApiController
     }
     public function store (Request $request)
     {
+        // dd($request->all());
     	$pipeline = Pipeline::create([
     		'name' => $request->get('name'),
     		'steps' => $request->get('steps')

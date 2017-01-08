@@ -13,6 +13,7 @@ class BatchTransformer extends TransformerAbstract
 	{
 		return [
 			'id' => $batch->id,
+			'task_id' => $batch->task_id,
 			'client_id' => $batch->client_id,
 			'sample_type' => $batch->sample_type,
 			'sender' => $batch->sender,

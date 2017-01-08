@@ -3,6 +3,7 @@
 Route::group(['middleware' => ['cors', 'api']], function () {
     Route::post('/auth/token/issue', 'AuthController@issueToken');
     Route::post('/auth/token/refresh', 'AuthController@refreshToken');
+    Route::get('batches/unsign', 'BatchesController@unsign');
     Route::resource('batches', 'BatchesController');
     Route::get('/batches/{id}/samples', 'SamplesController@batchSamples');
     Route::resource('samples', 'SamplesController');

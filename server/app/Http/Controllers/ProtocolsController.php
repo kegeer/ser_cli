@@ -35,8 +35,9 @@ class ProtocolsController extends ApiController
     {
     	$protocol = $this->findOrNot($id);
     	$protocol->fill([
-    		'name' => $request->get('name'),
-    		'steps' => $request->get('steps')
+    		'procedure' => $request->get('procedure'),
+            'name' => $request->get('name'),
+            'content' => $request->get('content')
     	])->save();
     	return $this->response->item($protocol, new ProtocolTransformer);
     }

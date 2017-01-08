@@ -1,0 +1,33 @@
+server
+    {
+        listen 8001;
+        #listen [::]:80;
+        server_name ser-cli.dev;
+        index index.html index.htm index.php default.html default.htm default.php;
+        root  /home/wwwroot/ser_cli/server/public;
+
+        include none.conf;
+        #error_page   404   /404.html;
+        include enable-php.conf;
+	location / {
+        try_files $uri $uri/ /index.php?$query_string;
+ 	   }
+ 
+
+        location ~ .*\.(gif|jpg|jpeg|png|bmp|swf)$
+        {
+            expires      30d;
+        }
+
+        location ~ .*\.(js|css)?$
+        {
+            expires      12h;
+        }
+
+        location ~ /\.
+        {
+            deny all;
+        }
+
+        access_log off;
+    }
