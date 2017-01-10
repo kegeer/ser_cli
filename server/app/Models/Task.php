@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class Task extends Model
 {
-    protected $fillable = ['name', 'project_id', 'pipeline_id', 'start_time', 'end_time', 'exp_manager', 'info_manager'];
+    protected $fillable = ['name', 'pushed', 'project_id', 'pipeline_id', 'start_time', 'end_time', 'exp_manager', 'info_manager'];
 
     public function samples ()
     {

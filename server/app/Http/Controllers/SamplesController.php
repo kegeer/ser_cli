@@ -27,15 +27,19 @@ class SamplesController extends ApiController
     public function store(Request $request)
     {
     	// dd($request->all());
-    	$sample = Sample::create([
-            'batch_id' => $request->get('batch_id'),
-            'ori_num' => $request->get('ori_num'),
-            'py_num' => $request->get('py_num'),
-            'sample_amount_type' => $request->get('sample_amount_type'),
-            'sample_amount' => $request->get('sample_amount'),
-    		'sample_status' => $request->get('sample_status')
-		]);
-		return $this->response->withCreated($sample, new SampleTransformer);
+        $res = [];
+        $samples = $request->all();
+        foreach ($samples as $sample) {
+            $res = Sample::create([
+            'batch_id' => $sample['batch_id'],
+            'ori_num' => $sample['ori_num'],
+            'py_num' => $sample['py_num'],
+            'sample_amount_type' => $sample['sample_amount_type'],
+            'sample_amount' => $sample['sample_amount'],
+            'sample_status' => $sample['sample_status']
+            ]);
+        }
+		return $this->response->withCreated($res, new SampleTransformer);
     }
     public function show($id)
     {

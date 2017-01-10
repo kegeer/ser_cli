@@ -52,7 +52,12 @@ class TasksController extends ApiController
     	return $this->response->item($task, new TaskTransformer);
 
     }
-
+    public function push (Request $request, $id) {
+        $task = $this->findOrNot($id);
+        // dd($task);
+        $task->fill(['pushed' => 1])->save();
+        return $this->response->item($task, new TaskTransformer);
+    }
     public function update(Request $request, $id)
     {
     	$task = $this->findOrNot($id);

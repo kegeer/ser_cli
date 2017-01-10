@@ -18,10 +18,9 @@ class TaskTransformer extends TransformerAbstract
 			'pipeline_id' => $task->pipeline_id,
 			'exp_manager' => $task->exp_manager,
 			'info_manager' => $task->info_manager,
-			'datetime_range' => [
-				0 => $task->start_time,
-				1 => $task->end_time
-			],
+			'pushed' => $task->pushed,
+			'start_time' => $task->start_time,
+			'end_time' => $task->end_time,
 			'batchesSelection' => $task->batches,
 			'created_at' => $task->created_at->toIso8601String(),
             'updated_at' => $task->updated_at->toIso8601String()

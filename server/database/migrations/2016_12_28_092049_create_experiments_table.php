@@ -15,11 +15,12 @@ class CreateExperimentsTable extends Migration
     {
         Schema::create('experiments', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('batch_num')->nullable();
             $table->integer('sample_id');
             $table->tinyInteger('current_step');
             $table->tinyInteger('current_step_id');
             $table->boolean('status');
-            $table->json('quality');
+            $table->json('quality')->nullable();
             $table->timestamps();
         });
     }

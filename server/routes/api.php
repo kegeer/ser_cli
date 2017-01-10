@@ -9,6 +9,7 @@ Route::group(['middleware' => ['cors', 'api']], function () {
     Route::resource('samples', 'SamplesController');
     Route::resource('projects', 'ProjectsController');
     Route::get('/projects/{id}/tasks', 'TasksController@projectTasks');
+    Route::patch('tasks/{id}/push', 'TasksController@push');
     Route::resource('tasks', 'TasksController');
     Route::group(['prefix' => 'experiments'], function () {
         Route::get('splits', 'ExperimentsController@splits');
@@ -25,5 +26,5 @@ Route::group(['middleware' => ['cors', 'api']], function () {
     Route::resource('results', 'ResultsController');
     Route::resource('pipelines', 'PipelinesController');
 	Route::resource('protocols', 'ProtocolsController');
-    Route::get('/procedures', 'ProceduresController@index');
+    Route::get('procedures', 'ProceduresController@index');
 });

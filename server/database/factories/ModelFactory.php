@@ -62,3 +62,24 @@ $factory->define(App\Models\Experiment::class, function (Faker\Generator $faker)
         'quality' => json_encode($faker->words())
     ];
 });
+
+$factory->define(App\Models\Qc::class, function (Faker\Generator $faker) {
+    return [
+        'run_id' => str_random(10),
+        'summary' => json_encode($faker->words()),
+        'index' => json_encode($faker->words()),
+        'cycle' => json_encode($faker->words()),
+        'hist' => json_encode($faker->words())
+    ];
+});
+
+$factory->define(App\Models\Result::class, function (Faker\Generator $faker) {
+    return [
+        'sample_id' => $faker->numberBetween(1, 8),
+        'product' => $faker->numberBetween(1, 8),
+        'major' => $faker->numberBetween(1, 8),
+        'sub' => $faker->numberBetween(1, 8),
+        'revision' => $faker->numberBetween(1, 8),
+        'result' => json_encode($faker->words())
+    ];
+});

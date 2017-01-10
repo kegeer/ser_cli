@@ -15,7 +15,7 @@ class CreateResultsTable extends Migration
     {
         Schema::create('results', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('sample_id');
+            $table->string('sample_id');
             $table->smallInteger('product');
             $table->smallInteger('major');
             $table->smallInteger('sub');

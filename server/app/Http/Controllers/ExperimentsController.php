@@ -43,13 +43,21 @@ class ExperimentsController extends ApiController
     {
     	$exp = Experiment::findOrFail($id);
     	if ($request->get('next')) {
-    		$this->moveToNext($exp)->save();
+    		$this->moveToNext($request, $exp)->save();
     	} else {
     		$data = $request->except(['_url']);
-	    	$exp->quality = $data;
+            $qua = [];
+            $qua['data'] = $data;
+            $qua['step'] = $exp->current_step_id;
+	    	$exp->quality = $qua;
+            $exp->status = 1;
 	    	$exp->save();
     	}
 		return $this->response->item($exp, new ExperimentTransformer);
+    }
+    public function show ($id) {
+        $experiment = $this->findOrNot($id);
+        return $this->response->item($experiment, new ExperimentTransformer);
     }
     public function stepData ($id)
     {
@@ -64,10 +72,11 @@ class ExperimentsController extends ApiController
         }
         return $experiment;
     }
-    protected function moveToNext ($exp)
+    protected function moveToNext ($request, $exp)
     {
     	// $pipeline = Task::where('sample_id', $exp->sample_id)->get()->pipeline;
     	// TODO: here is the task sample experiment connection
+        $exp->batch_num = $request->get('batch_num');
     	$exp->current_step += 1;
     	$exp->current_step_id += 1;
     	// $exp->current_step_id = $pipeline[$exp->current_step]['procedure_id'];
